@@ -1,4 +1,4 @@
-# $Id: 03invalid.t,v 1.2 2003/11/11 23:15:08 struan Exp $
+# $Id: 03invalid.t 7 2003-11-11 23:15:08Z struan $
 
 use Test::More tests => 4;
 use WebService::Validator::HTML::W3C;

@@ -1,4 +1,4 @@
-# $Id: 01load.t,v 1.1.1.1 2003/11/11 22:49:12 struan Exp $
+# $Id: 01load.t 2 2003-11-11 22:49:11Z struan $
 
 use Test::More tests => 3;
 

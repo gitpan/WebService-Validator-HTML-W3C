@@ -1,4 +1,4 @@
-# $Id: Error.pm,v 1.4 2003/11/26 13:52:18 struan Exp $
+# $Id: Error.pm 31 2003-11-26 13:52:18Z struan $
 
 package WebService::Validator::HTML::W3C::Error;
 

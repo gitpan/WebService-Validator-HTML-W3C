@@ -1,10 +1,11 @@
-# $Id: W3C.pm 42 2004-11-09 11:51:35Z struan $
+# $Id: W3C.pm 310 2004-11-15 21:52:20Z struan $
 
 package WebService::Validator::HTML::W3C;
 
 use strict;
 use base qw( Class::Accessor );
 use LWP::UserAgent;
+use HTTP::Request::Common 'POST';
 use URI::Escape;
 use WebService::Validator::HTML::W3C::Error;
 
@@ -14,7 +15,7 @@ __PACKAGE__->mk_accessors(
 
 use vars qw( $VERSION $VALIDATOR_URI $HTTP_TIMEOUT );
 
-$VERSION       = 0.05;
+$VERSION       = 0.06;
 $VALIDATOR_URI = 'http://validator.w3.org/check';
 $HTTP_TIMEOUT  = 30;
 
@@ -106,11 +107,43 @@ sub _init {
 Validate a URI. Returns 0 if the validation fails (e.g if the 
 validator cannot be reached), otherwise 1.
 
+=head2 validate_file
+
+    $v->validate_file( './file.html' );
+
+Validate a file by uploading it to the W3C Validator. NB This has only been tested on a Linux box so may not work on non unix machines.
+
+=head2 validate_markup
+
+    $v->validate_markup( $markup );
+
+Validate a scalar containing HTML. 
+
 =cut
+
+sub validate_file {
+    my $self = shift;
+    my $file = shift;
+
+    return $self->validator_error("You need to supply a file to validate")
+        unless $file;
+
+    return $self->_validate( { file => $file } );
+}
+
+sub validate_markup {
+    my $self = shift;
+    my $markup = shift;
+
+    return $self->validator_error("You need to supply markup to validate")
+        unless $markup;
+
+    return $self->_validate( { markup => $markup } );
+}
 
 sub validate {
     my $self = shift;
-    my $uri  = shift;
+    my $uri = shift;
 
     return $self->validator_error("You need to supply a URI to validate")
       unless $uri;
@@ -118,13 +151,20 @@ sub validate {
     return $self->validator_error("You need to supply a URI scheme (e.g http)")
       unless $uri =~ m(^.*?://);
 
-    my $uri_orig = $uri;
-    my $req_uri  = $self->_construct_uri($uri);
+    return $self->_validate( $uri );
+}
 
-    my $method = $self->_http_method();
+sub _validate {
+    my $self = shift;
+    my $uri  = shift;
+
+    my $uri_orig = $uri;
+
     my $ua = LWP::UserAgent->new( agent   => __PACKAGE__ . "/$VERSION",
                                   timeout => $self->http_timeout );
-    my $request  = new HTTP::Request( $method, "$req_uri" );
+
+    my $request  = $self->_get_request( $uri );
+
     my $response = $ua->simple_request($request);
 
     if ( $response->is_success )    # not an error, we could contact the server
@@ -336,6 +376,36 @@ sub _parse_validator_response {
 
     return ( $valid, $valid_err_num );
 }
+
+sub _get_request {
+    my $self = shift;
+    my $uri = shift;
+
+    if ( ref $uri ) {
+        if ( $uri->{ file } ) {
+            return POST $self->validator_uri, 
+                        Content_Type  =>  'form-data', 
+                        Content       =>  [
+                                           output => 'xml',
+                                           uploaded_file => [ $uri->{ file } ],
+                                          ];
+        } elsif ( $uri->{ markup } ) {
+            return POST $self->validator_uri, 
+                        Content_Type  =>  'form-data', 
+                        Content       =>  [
+                                           output => 'xml',
+                                           uploaded_file => [ 
+                                                             undef, 
+                                                             'file.html', 
+                                                             Content => $uri->{ markup } 
+                                                             ],
+                                          ];
+        }
+    } else {
+        return new HTTP::Request( $self->_http_method(), $self->_construct_uri( $uri ) );
+    }
+}
+        
 1;
 
 __END__

@@ -1,4 +1,4 @@
-# $Id: 06detailed.t 40 2004-05-09 13:28:03Z struan $
+# $Id: 06detailed.t 41 2004-05-09 13:28:03Z struan $
 
 use Test::More tests => 6;
 use WebService::Validator::HTML::W3C;

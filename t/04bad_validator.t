@@ -1,4 +1,4 @@
-# $Id: 04bad_validator.t 13 2003-11-17 12:01:17Z struan $
+# $Id: 04bad_validator.t 308 2004-11-15 21:47:24Z struan $
 
 use Test::More tests => 12;
 

@@ -1,4 +1,4 @@
-# $Id: W3C.pm,v 1.14 2003/11/25 17:28:45 struan Exp $
+# $Id: W3C.pm,v 1.17 2004/01/13 22:30:25 struan Exp $
 
 package WebService::Validator::HTML::W3C;
 
@@ -14,7 +14,7 @@ __PACKAGE__->mk_accessors(
 
 use vars qw( $VERSION $VALIDATOR_URI $HTTP_TIMEOUT );
 
-$VERSION       = 0.01;
+$VERSION       = 0.02;
 $VALIDATOR_URI = 'http://validator.w3.org/check';
 $HTTP_TIMEOUT  = 30;
 
@@ -39,7 +39,7 @@ WebService::Validator::HTML::W3C - Access the W3Cs online HTML validator
             }
         }
     } else {
-        printf ("Failed to validate the website: %s\n", $v->validate_error);
+        printf ("Failed to validate the website: %s\n", $v->validator_error);
     }
 
 =head1 DESCRIPTION
@@ -361,6 +361,11 @@ If in doubt please try and run the test suite before reporting bugs.
 
 That said I'm very happy to hear about bugs. All the more so if they come
 with patches ;).
+
+=head1 THANKS
+
+To the various people on the code review ladder mailing list who 
+provided useful suggestions.
 
 =head1 SUPPORT
 

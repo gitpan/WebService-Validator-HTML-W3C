@@ -1,7 +1,9 @@
 Build.PL
+Changes
 MANIFEST
 META.yml
 Makefile.PL
+README
 lib/WebService/Validator/HTML/W3C.pm
 lib/WebService/Validator/HTML/W3C/Error.pm
 t/01load.t
@@ -11,3 +13,4 @@ t/04bad_validator.t
 t/05options.t
 t/06detailed.t
 t/07no_xpath.t
+t/99_pod.t

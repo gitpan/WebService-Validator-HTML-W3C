@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: WebService-Validator-HTML-W3C
-version: 0.01
+version: 0.02
 license: perl
 distribution_type: module
 requires:
@@ -13,7 +13,7 @@ conflicts: {}
 provides:
   WebService::Validator::HTML::W3C:
     file: lib/WebService/Validator/HTML/W3C.pm
-    version: 0.01
+    version: 0.02
   WebService::Validator::HTML::W3C::Error:
     file: lib/WebService/Validator/HTML/W3C/Error.pm
 generated_by: Module::Build version 0.21

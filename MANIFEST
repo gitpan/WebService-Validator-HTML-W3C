@@ -1,0 +1,13 @@
+Build.PL
+MANIFEST
+META.yml
+Makefile.PL
+lib/WebService/Validator/HTML/W3C.pm
+lib/WebService/Validator/HTML/W3C/Error.pm
+t/01load.t
+t/02validate.t
+t/03invalid.t
+t/04bad_validator.t
+t/05options.t
+t/06detailed.t
+t/07no_xpath.t

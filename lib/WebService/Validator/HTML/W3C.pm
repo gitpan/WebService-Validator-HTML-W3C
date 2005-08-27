@@ -1,4 +1,4 @@
-# $Id: W3C.pm 456 2005-07-27 22:08:20Z struan $
+# $Id: W3C.pm 475 2005-08-27 11:18:47Z struan $
 
 package WebService::Validator::HTML::W3C;
 
@@ -15,7 +15,7 @@ __PACKAGE__->mk_accessors(
 
 use vars qw( $VERSION $VALIDATOR_URI $HTTP_TIMEOUT );
 
-$VERSION       = 0.07;
+$VERSION       = 0.08;
 $VALIDATOR_URI = 'http://validator.w3.org/check';
 $HTTP_TIMEOUT  = 30;
 
@@ -394,11 +394,7 @@ sub _get_request {
                         Content_Type  =>  'form-data', 
                         Content       =>  [
                                            output => 'xml',
-                                           uploaded_file => [ 
-                                                             undef, 
-                                                             'file.html', 
-                                                             Content => $uri->{ markup } 
-                                                             ],
+                                           fragment => $uri->{ markup },
                                           ];
         }
     } else {

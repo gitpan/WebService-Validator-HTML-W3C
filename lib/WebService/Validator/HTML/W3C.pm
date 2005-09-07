@@ -1,4 +1,4 @@
-# $Id: W3C.pm 475 2005-08-27 11:18:47Z struan $
+# $Id: W3C.pm 506 2005-09-07 19:20:09Z struan $
 
 package WebService::Validator::HTML::W3C;
 
@@ -15,7 +15,7 @@ __PACKAGE__->mk_accessors(
 
 use vars qw( $VERSION $VALIDATOR_URI $HTTP_TIMEOUT );
 
-$VERSION       = 0.08;
+$VERSION       = 0.09;
 $VALIDATOR_URI = 'http://validator.w3.org/check';
 $HTTP_TIMEOUT  = 30;
 
@@ -27,7 +27,9 @@ WebService::Validator::HTML::W3C - Access the W3Cs online HTML validator
 
     use WebService::Validator::HTML::W3C;
 
-    my $v = WebService::Validator::HTML::W3C->new();
+    my $v = WebService::Validator::HTML::W3C->new(
+                detailed    =>  1
+            );
 
     if ( $v->validate("http://www.example.com/") ) {
         if ( $v->is_valid ) {

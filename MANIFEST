@@ -16,6 +16,7 @@ t/07no_xpath.t
 t/08no_detailed.t
 t/09scalar.t
 t/10file.t
+t/11detailed_soap.t
 t/99_pod.t
 t/99_podcover.t
 t/invalid.html

@@ -1,4 +1,4 @@
-# $Id: W3C.pm 564 2006-03-04 12:19:07Z struan $
+# $Id: W3C.pm 575 2006-04-25 20:53:32Z struan $
 
 package WebService::Validator::HTML::W3C;
 
@@ -8,6 +8,7 @@ use LWP::UserAgent;
 use HTTP::Request::Common 'POST';
 use URI::Escape;
 use WebService::Validator::HTML::W3C::Error;
+use WebService::Validator::HTML::W3C::Warning;
 
 __PACKAGE__->mk_accessors(
     qw( http_timeout validator_uri proxy _http_method
@@ -15,7 +16,7 @@ __PACKAGE__->mk_accessors(
 
 use vars qw( $VERSION $VALIDATOR_URI $HTTP_TIMEOUT );
 
-$VERSION       = 0.12;
+$VERSION       = 0.13;
 $VALIDATOR_URI = 'http://validator.w3.org/check';
 $HTTP_TIMEOUT  = 30;
 
@@ -248,7 +249,7 @@ Returns the number of errors that the validator encountered.
     
     foreach my $err ( @$errors ) {
         printf("line: %s, col: %s\n\terror: %s\n", 
-                $err-line, $err->col, $err->msg);
+                $err->line, $err->col, $err->msg);
     }
 
 Returns an array ref of WebService::Validator::HTML::W3C::Error objects.
@@ -260,6 +261,17 @@ WebService::Validator::HTML::W3C with the detailed option. If you have not
 set the detailed option a warning will be issued, the detailed option will
 be set and a second request made to the validator in order to fetch the
 required information. 
+
+If there was a problem processing the detailed information then this method 
+will return 0.
+
+=head2 warnings
+
+ONLY available with the SOAP output from the development Validator at the moment.
+
+    $warnings = $c->warnings();
+
+Works exactly the same as errors only returns an array ref of WebService::Validator::HTML::W3C::Warning objects. In all other respects it's the same.
 
 =cut
 
@@ -285,6 +297,9 @@ sub errors {
     my $xp       = XML::XPath->new( xml => $self->_content() );
 
     if ( $self->_output eq 'xml' ) {
+        if ( ! $xp->findnodes('/result') ) {
+            return $self->validator_error( 'Result format does not appear to be XML' );
+        }
         my @messages = $xp->findnodes('/result/messages/msg');
 
         foreach my $msg (@messages) {
@@ -297,6 +312,9 @@ sub errors {
             push @errs, $err;
         }
     } else { # assume soap...
+        if ( ! $xp->findnodes('/env:Envelope') ) {
+            return $self->validator_error( 'Result format does not appear to be SOAP' );
+        }
        my @messages = $xp->findnodes( '/env:Envelope/env:Body/m:markupvalidationresponse/m:errors/m:errorlist/m:error' );
 
        foreach my $msg ( @messages ) {
@@ -311,6 +329,56 @@ sub errors {
     }
 
     return \@errs;
+}
+
+sub warnings {
+    my $self = shift;
+
+    unless ( $self->_http_method() eq 'GET' ) {
+        warn "You should set detailed when initalising if you intend to use the errors method";
+        $self->_http_method( 'GET' );
+        $self->validate( $self->uri() );
+    }
+
+
+    eval { require XML::XPath; };
+    if ($@) {
+        warn "XML::XPath must be installed in order to get warnings";
+        return undef;
+    }
+
+    my $xp       = XML::XPath->new( xml => $self->_content() );
+
+    my @warnings;
+
+    if ( $self->_output eq 'soap12' ) {
+        if ( ! $xp->findnodes('/env:Envelope') ) {
+            return $self->validator_error( 'Result format does not appear to be SOAP' );
+        }
+        my @messages = $xp->findnodes( '/env:Envelope/env:Body/m:markupvalidationresponse/m:warnings/m:warninglist/m:warning' );
+
+        foreach my $msg ( @messages ) {
+            my ($line, $col, $node);
+            if ( $node = $xp->find( './m:line', $msg ) ) {
+                $line = $node->get_node(1)->getChildNode(1)->getValue;
+            }
+            if ( $node = $xp->find( './m:col', $msg ) ) {
+                $col = $node->get_node(1)->getChildNode(1)->getValue;
+            }
+
+            my $warning = WebService::Validator::HTML::W3C::Warning->new({ 
+                          line => $line,
+                          col  => $col,
+                          msg  => $xp->find( './m:message', $msg )->get_node(1)->getChildNode(1)->getValue,
+                      });
+
+            push @warnings, $warning;
+        }
+        return \@warnings;
+    } else {
+        return $self->validator_error( 'Warnings only available with SOAP output format' );
+
+    }
 }
 
 =head2 validator_error
@@ -352,6 +420,13 @@ WebService::Validator::HTML::W3C could not establish a connection to the URI.
 Should never happen and most likely indicates a problem somewhere but
 on the off chance that WebService::Validator::HTML::W3C is unable to make
 sense of the response from the validator you'll get this error.
+
+=item Result format does not appear to be SOAP|XML
+
+If you've asked for detailed results and the reponse from the validator 
+isn't in the expected format then you'll get this error. Most likely to 
+happen if you ask for SOAP output from a validator that doesn't
+support that format.
 
 =back
 
@@ -490,7 +565,7 @@ L<http://www.exo.org.uk/code/>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2003 Struan Donald. All rights reserved.
+Copyright (C) 2003-2005 Struan Donald. All rights reserved.
 
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.

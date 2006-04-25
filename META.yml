@@ -1,9 +1,9 @@
 ---
 name: WebService-Validator-HTML-W3C
-version: 0.12
+version: 0.13
 author:
-  - Struan Donald E<lt>struan@cpan.orgE<gt>
-  - L<http://www.exo.org.uk/code/>
+  - 'Struan Donald E<lt>struan@cpan.orgE<gt>'
+  - 'L<http://www.exo.org.uk/code/>'
 abstract: Access the W3Cs online HTML validator
 license: perl
 requires:
@@ -14,7 +14,9 @@ build_requires:
 provides:
   WebService::Validator::HTML::W3C:
     file: lib/WebService/Validator/HTML/W3C.pm
-    version: 0.12
+    version: 0.13
   WebService::Validator::HTML::W3C::Error:
     file: lib/WebService/Validator/HTML/W3C/Error.pm
+  WebService::Validator::HTML::W3C::Warning:
+    file: lib/WebService/Validator/HTML/W3C/Warning.pm
 generated_by: Module::Build version 0.25

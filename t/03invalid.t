@@ -11,5 +11,5 @@ SKIP: {
     ok ($v, 'object created');
     ok ($v->validate('http://exo.org.uk/code/www-w3c-validator/invalid.html'), 'page validated');
     ok (!$v->is_valid, 'page is not valid');
-    is ($v->num_errors, 2, 'correct number of errors');
+    is ($v->num_errors, 1, 'correct number of errors');
 }

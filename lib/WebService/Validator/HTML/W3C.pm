@@ -1,4 +1,4 @@
-# $Id: W3C.pm 575 2006-04-25 20:53:32Z struan $
+# $Id: W3C.pm 641 2006-12-18 22:52:21Z struan $
 
 package WebService::Validator::HTML::W3C;
 
@@ -16,7 +16,7 @@ __PACKAGE__->mk_accessors(
 
 use vars qw( $VERSION $VALIDATOR_URI $HTTP_TIMEOUT );
 
-$VERSION       = 0.14;
+$VERSION       = 0.15;
 $VALIDATOR_URI = 'http://validator.w3.org/check';
 $HTTP_TIMEOUT  = 30;
 
@@ -184,7 +184,7 @@ sub _validate {
 
     my $request = $self->_get_request( $uri );
 
-    my $response = $ua->simple_request($request);
+    my $response = $ua->request($request);
 
     if ( $response->is_success )    # not an error, we could contact the server
     {

@@ -1,6 +1,6 @@
 ---
 name: WebService-Validator-HTML-W3C
-version: 0.16
+version: 0.17
 author:
   - 'Struan Donald E<lt>struan@cpan.orgE<gt>'
   - 'L<http://www.exo.org.uk/code/>'
@@ -14,7 +14,7 @@ build_requires:
 provides:
   WebService::Validator::HTML::W3C:
     file: lib/WebService/Validator/HTML/W3C.pm
-    version: 0.16
+    version: 0.17
   WebService::Validator::HTML::W3C::Error:
     file: lib/WebService/Validator/HTML/W3C/Error.pm
   WebService::Validator::HTML::W3C::Warning:

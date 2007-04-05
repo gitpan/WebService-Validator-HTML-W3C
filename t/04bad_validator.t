@@ -1,4 +1,4 @@
-# $Id: 04bad_validator.t 455 2005-07-27 22:06:53Z struan $
+# $Id: 04bad_validator.t 651 2007-04-05 18:30:54Z struan $
 
 use Test::More tests => 12;
 
@@ -22,6 +22,12 @@ SKIP: {
     
     ok(!$v->validate('http://exo.org.uk/code/www-w3c-validator/valid.html'), 
         'validation fails');
+
+    if ($v->validator_error eq "Could not contact validator")
+    {
+        skip "failed to contact bad validator", 1;
+    }
+
     is($v->validator_error, 'Not a W3C Validator or Bad URI', 
         'not a W3C validator error');
 }

@@ -1,4 +1,4 @@
-# $Id: 03invalid.t 640 2006-12-03 17:58:45Z struan $
+# $Id: 03invalid.t 651 2007-04-05 18:30:54Z struan $
 
 use Test::More tests => 3;
 use WebService::Validator::HTML::W3C;
@@ -6,7 +6,7 @@ use WebService::Validator::HTML::W3C;
 my $v = WebService::Validator::HTML::W3C->new( );
 
 SKIP: {
-    skip "no internet connection", 4 if -f 't/SKIPLIVE';
+    skip "no internet connection", 3 if -f 't/SKIPLIVE';
 
     ok ($v, 'object created');
 

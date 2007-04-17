@@ -1,5 +1,6 @@
 Build.PL
 Changes
+examples/validate_files_in_dir.pl
 lib/WebService/Validator/HTML/W3C.pm
 lib/WebService/Validator/HTML/W3C/Error.pm
 lib/WebService/Validator/HTML/W3C/Warning.pm

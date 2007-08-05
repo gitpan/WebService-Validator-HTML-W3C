@@ -9,7 +9,7 @@ my $v = WebService::Validator::HTML::W3C->new(
         );
     
 SKIP: {
-    skip "no internet connection", 8 if -f 't/SKIPLIVE';
+    skip "TEST_AUTHOR environment variable not defined", 8 unless $ENV{ 'TEST_AUTHOR' };
 
     ok($v, 'object created');
 
@@ -40,5 +40,5 @@ SKIP: {
 
     ok( $r, 'validated invalid file');
     ok( !$v->is_valid(), 'invalid file is invalid' );
-    is( $v->num_errors(), 1, 'correct number of errors');
+    is( $v->num_errors(), 4, 'correct number of errors');
 }

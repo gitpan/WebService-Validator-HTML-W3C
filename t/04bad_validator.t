@@ -1,4 +1,4 @@
-# $Id: 04bad_validator.t 651 2007-04-05 18:30:54Z struan $
+# $Id: 04bad_validator.t 697 2007-08-05 20:22:35Z struan $
 
 use Test::More tests => 12;
 
@@ -18,7 +18,7 @@ is($v->validator_uri, 'http://exo.org.uk/cgi-bin/cgi-test.cgi',
     'correct validator uri');
 
 SKIP: {
-    skip "no internet connection", 2 if -f 't/SKIPLIVE';
+    skip "TEST_AUTHOR environment variable not defined", 2 unless $ENV{ 'TEST_AUTHOR' };
     
     ok(!$v->validate('http://exo.org.uk/code/www-w3c-validator/valid.html'), 
         'validation fails');
@@ -35,6 +35,10 @@ SKIP: {
 ok($v->validator_uri('http://doa.example.com/'), 'validator address changed');
 is($v->validator_uri, 'http://doa.example.com/', 'correct validator uri');
 
-ok(!$v->validate('http://exo.org.uk/code/valid.html'), 'validation fails');
-is($v->validator_error, 'Could not contact validator', 
-    'validator unreachable error');
+SKIP: {
+	skip "TEST_AUTHOR environment variable not defined", 2 unless $ENV{ 'TEST_AUTHOR' };
+	
+	ok(!$v->validate('http://exo.org.uk/code/valid.html'), 'validation fails');
+	is($v->validator_error, 'Could not contact validator', 
+	    'validator unreachable error');
+}

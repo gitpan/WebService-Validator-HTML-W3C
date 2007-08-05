@@ -1,4 +1,4 @@
-# $Id: W3C.pm 656 2007-04-17 21:36:40Z struan $
+# $Id: W3C.pm 698 2007-08-05 20:22:36Z struan $
 
 package WebService::Validator::HTML::W3C;
 
@@ -12,11 +12,11 @@ use WebService::Validator::HTML::W3C::Warning;
 
 __PACKAGE__->mk_accessors(
     qw( http_timeout validator_uri proxy ua _http_method
-      is_valid num_errors uri _content _output ) );
+      is_valid num_errors uri _content _output _response ) );
 
 use vars qw( $VERSION $VALIDATOR_URI $HTTP_TIMEOUT );
 
-$VERSION       = 0.19;
+$VERSION       = 0.20;
 $VALIDATOR_URI = 'http://validator.w3.org/check';
 $HTTP_TIMEOUT  = 30;
 
@@ -182,6 +182,8 @@ sub _validate {
 
     my $uri_orig = $uri;
 
+	$self->uri($uri_orig);
+
     my $ua = $self->ua;
     if ( ! $ua ) {
        $ua = LWP::UserAgent->new( agent   => __PACKAGE__ . "/$VERSION",
@@ -199,32 +201,20 @@ sub _validate {
 
         # set both valid and error number according to response
 
-        my ( $valid, $valid_err_num ) =
-          $self->_parse_validator_response($response);
+		$self->_response( $response );
+		
+        my $res = $self->_parse_validator_response();
         $self->_content( $response->content() )
           if $self->_http_method() !~ /HEAD/;
 
         # we know the validator has been able to (in)validate if
         # $self->valid is not NULL
 
-        if ( $valid and $valid_err_num ) {
-            $self->is_valid(0);
-            $self->num_errors($valid_err_num);
-            $self->uri($uri_orig);
-            return 1;
-        }
-        elsif ( !defined $valid ) {
-            return $self->validator_error('Not a W3C Validator or Bad URI');
-        }
-        elsif ( $valid =~ /\bvalid\b/i ) {
-            $self->is_valid(1);
-            $self->num_errors($valid_err_num);
-            $self->uri($uri_orig);
-            return 1;
-        }
-
-        return $self->validator_error(
-                            'Did not get a sensible result from the Validator');
+		if ( $res ) {
+			return 1;
+		} else {
+			return 0;
+		}
     }
     else {
         return $self->validator_error('Could not contact validator');
@@ -483,7 +473,7 @@ sub _construct_uri {
 
 sub _parse_validator_response {
     my $self     = shift;
-    my $response = shift;
+    my $response = $self->_response();
 
     my $valid         = $response->header('X-W3C-Validator-Status');
     my $valid_err_num = $response->header('X-W3C-Validator-Errors');
@@ -491,7 +481,22 @@ sub _parse_validator_response {
     # remove non digits to fix output bug in some versions of validator
     $valid_err_num =~ s/\D+//g if $valid_err_num;
 
-    return ( $valid, $valid_err_num );
+    if ( $valid and $valid_err_num ) {
+        $self->is_valid(0);
+        $self->num_errors($valid_err_num);
+        return 1;
+    }
+    elsif ( !defined $valid ) {
+        return $self->validator_error('Not a W3C Validator or Bad URI');
+    }
+    elsif ( $valid =~ /\bvalid\b/i ) {
+        $self->is_valid(1);
+        $self->num_errors($valid_err_num);
+        return 1;
+    }
+
+    return $self->validator_error(
+                        'Did not get a sensible result from the Validator');
 }
 
 sub _get_request {
@@ -554,7 +559,10 @@ module is only guaranteed to work with the currently stable version of the
 validator. It will most likely work with any Beta versions but don't rely 
 on it.
 
-If in doubt please try and run the test suite before reporting bugs. 
+If in doubt please try and run the test suite before reporting bugs. Note
+that in order to run tests against the validator service you will need to
+have a connection to the internet and also set an environment variable called
+TEST_AUTHOR.
 
 That said I'm very happy to hear about bugs. All the more so if they come
 with patches ;).

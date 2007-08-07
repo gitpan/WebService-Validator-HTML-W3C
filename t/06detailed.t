@@ -1,13 +1,15 @@
-# $Id: 06detailed.t 697 2007-08-05 20:22:35Z struan $
+# $Id: 06detailed.t 700 2007-08-07 20:52:52Z struan $
 
 use Test::More;
 use WebService::Validator::HTML::W3C;
 
+my $test_num = 5;
+
 if ( $ENV{ 'TEST_AUTHOR' } ) {
-	plan tests => 6;
-} else {
-	plan tests => 5;
+	 $test_num = 6;
 }
+
+plan tests => $test_num;
 
 my $v = WebService::Validator::HTML::W3C->new(
             http_timeout    =>  10,
@@ -15,7 +17,7 @@ my $v = WebService::Validator::HTML::W3C->new(
         );
 
 SKIP: {
-    skip "XML::XPath not installed", 6 if -f 't/SKIPXPATH';
+    skip "XML::XPath not installed", $test_num if -f 't/SKIPXPATH';
 
     ok($v, 'object created');
 

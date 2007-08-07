@@ -1,16 +1,18 @@
-# $Id: 07no_xpath.t 697 2007-08-05 20:22:35Z struan $
+# $Id: 07no_xpath.t 700 2007-08-07 20:52:52Z struan $
 
 use Test::More;
 
 BEGIN {
+	my $num_tests = 2;
+	
 	if ( $ENV{ 'TEST_AUTHOR' } ) {
-		plan tests => 3;
-	} else {
-		plan tests => 2;
-	}
+		$num_tests = 3;
+	} 
+	
+	plan tests => $num_tests;
 	
     SKIP: {
-        skip "no Test::Without::Module", 3, if -f 't/SKIPWITHOUT';
+        skip "no Test::Without::Module", $num_tests, if -f 't/SKIPWITHOUT';
 
         require Test::Without::Module;
         import Test::Without::Module qw( XML::XPath );

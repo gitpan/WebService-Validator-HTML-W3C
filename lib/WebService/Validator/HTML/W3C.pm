@@ -1,4 +1,4 @@
-# $Id: W3C.pm 701 2007-08-07 20:57:45Z struan $
+# $Id: W3C.pm 704 2007-08-28 21:14:05Z struan $
 
 package WebService::Validator::HTML::W3C;
 
@@ -16,7 +16,7 @@ __PACKAGE__->mk_accessors(
 
 use vars qw( $VERSION $VALIDATOR_URI $HTTP_TIMEOUT );
 
-$VERSION       = 0.21;
+$VERSION       = 0.22;
 $VALIDATOR_URI = 'http://validator.w3.org/check';
 $HTTP_TIMEOUT  = 30;
 
@@ -267,9 +267,10 @@ will return 0.
 
 ONLY available with the SOAP output from the development Validator at the moment.
 
-    $warnings = $c->warnings();
+    $warnings = $v->warnings();
 
-Works exactly the same as errors only returns an array ref of WebService::Validator::HTML::W3C::Warning objects. In all other respects it's the same.
+Works exactly the same as errors only returns an array ref of 
+WebService::Validator::HTML::W3C::Warning objects. In all other respects it's the same.
 
 =cut
 
@@ -333,7 +334,7 @@ sub warnings {
     my $self = shift;
 
     unless ( $self->_http_method() eq 'GET' ) {
-        warn "You should set detailed when initalising if you intend to use the errors method";
+        warn "You should set detailed when initalising if you intend to use the warnings method";
         $self->_http_method( 'GET' );
         $self->validate( $self->uri() );
     }

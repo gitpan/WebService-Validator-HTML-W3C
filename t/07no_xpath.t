@@ -1,4 +1,4 @@
-# $Id: 07no_xpath.t 700 2007-08-07 20:52:52Z struan $
+# $Id$
 
 use Test::More;
 

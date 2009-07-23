@@ -1,4 +1,4 @@
-# $Id: 06detailed.t 741 2008-08-25 07:22:09Z struan $
+# $Id$
 
 use Test::More;
 use WebService::Validator::HTML::W3C;
@@ -52,7 +52,7 @@ validator">
 
              <m:error>
                  <m:line>11</m:line>
-                 <m:col>6</m:col>
+                 <m:col>7</m:col>
                  <m:message>end tag for &quot;div&quot; omitted, but OMITTAG NO was specified</m:message>
                  <m:messageid>70</m:messageid>
                  <m:explanation>  <![CDATA[
@@ -164,7 +164,7 @@ between Public and System identifiers in the DOCTYPE declaration</m:message></m:
     my $err = $v->errors->[0];
     isa_ok($err, 'WebService::Validator::HTML::W3C::Error');
     is($err->line, 11, 'Correct line number');
-    is($err->col, 6, 'Correct column');
+    is($err->col, 7, 'Correct column');
     like($err->msg, qr/end tag for "div" omitted, but OMITTAG NO was specified/,
                     'Correct message');
     

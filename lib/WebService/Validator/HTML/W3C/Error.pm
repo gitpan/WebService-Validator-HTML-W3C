@@ -1,4 +1,4 @@
-# $Id: Error.pm 734 2008-08-16 16:56:05Z struan $
+# $Id$
 
 package WebService::Validator::HTML::W3C::Error;
 

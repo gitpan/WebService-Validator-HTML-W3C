@@ -1,4 +1,4 @@
-# $Id: 03invalid.t 697 2007-08-05 20:22:35Z struan $
+# $Id$
 
 use Test::More tests => 3;
 use WebService::Validator::HTML::W3C;

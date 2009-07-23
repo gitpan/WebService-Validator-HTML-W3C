@@ -22,6 +22,7 @@ t/11detailed_soap.t
 t/12proxy.t
 t/13soap_wrong_format.t
 t/14warnings.t
+t/15alt_interface.t
 t/99_pod.t
 t/99_podcover.t
 t/invalid.html

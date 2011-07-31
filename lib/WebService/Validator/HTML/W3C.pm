@@ -12,11 +12,11 @@ use WebService::Validator::HTML::W3C::Warning;
 
 __PACKAGE__->mk_accessors(
     qw( http_timeout validator_uri proxy ua _http_method
-      is_valid num_errors uri _content _output _response ) );
+      is_valid num_errors num_warnings uri _content _output _response ) );
 
 use vars qw( $VERSION $VALIDATOR_URI $HTTP_TIMEOUT );
 
-$VERSION       = 0.26;
+$VERSION       = 0.27;
 $VALIDATOR_URI = 'http://validator.w3.org/check';
 $HTTP_TIMEOUT  = 30;
 
@@ -269,6 +269,12 @@ Returns the number of errors that the validator encountered.
 
 Synonym for num_errors. There to match CSS Validator interface.
 
+=head2 warningcount 
+
+    $num_errors = $v->warningcount();
+
+Returns the number of warnings that the validator encountered.
+
 =head2 errors
 
     $errors = $v->errors();
@@ -292,8 +298,6 @@ If there was a problem processing the detailed information then this method
 will return 0.
 
 =head2 warnings
-
-ONLY available with the SOAP output from the development Validator at the moment.
 
     $warnings = $v->warnings();
 
@@ -352,6 +356,10 @@ sub errors {
                           msgid         => $xp->find( './m:messageid', $msg )->get_node(1)->getChildNode(1)->getValue,
                           explanation   => $xp->find( './m:explanation', $msg )->get_node(1)->getChildNode(1)->getValue,
                       });
+                  
+            if ( $xp->find( './m:source' ) ) {
+                $err->source( $xp->find( './m:source', $msg )->get_node(1)->getChildNode(1)->getValue );
+            }
 
             push @errs, $err;
         }
@@ -362,6 +370,10 @@ sub errors {
 
 sub errorcount {
 	shift->num_errors;
+}
+
+sub warningcount {
+    shift->num_warnings;
 }
 
 sub warnings {
@@ -391,19 +403,27 @@ sub warnings {
         my @messages = $xp->findnodes( '/env:Envelope/env:Body/m:markupvalidationresponse/m:warnings/m:warninglist/m:warning' );
 
         foreach my $msg ( @messages ) {
-            my ($line, $col, $node);
-            if ( $node = $xp->find( './m:line', $msg ) ) {
-                $line = $node->get_node(1)->getChildNode(1)->getValue;
+            my ($line, $col);
+
+            if( ($line = $xp->findvalue('./m:line', $msg)) eq "") {
+                $line = undef;
             }
-            if ( $node = $xp->find( './m:col', $msg ) ) {
-                $col = $node->get_node(1)->getChildNode(1)->getValue;
+
+            if( ($col = $xp->findvalue('./m:col', $msg)) eq "") {
+                $col = undef;
             }
 
             my $warning = WebService::Validator::HTML::W3C::Warning->new({ 
-                          line => $line,
-                          col  => $col,
-                          msg  => $xp->find( './m:message', $msg )->get_node(1)->getChildNode(1)->getValue,
+                          line   => $line,
+                          col    => $col,
+                          msg    => $xp->find( './m:message', $msg )->get_node(1)->getChildNode(1)->getValue,
                       });
+
+            # we may not get a source element if, e.g the only error is a
+            # missing doctype so check first
+            if ( $xp->find( './m:source' ) ) {
+                $warning->source( $xp->find( './m:source', $msg )->get_node(1)->getChildNode(1)->getValue );
+            }
 
             push @warnings, $warning;
         }
@@ -517,6 +537,7 @@ sub _parse_validator_response {
 
     my $valid         = $response->header('X-W3C-Validator-Status');
     my $valid_err_num = $response->header('X-W3C-Validator-Errors');
+    $self->num_warnings($response->header('X-W3C-Validator-Warnings'));
 
     # remove non digits to fix output bug in some versions of validator
     $valid_err_num =~ s/\D+//g if $valid_err_num;

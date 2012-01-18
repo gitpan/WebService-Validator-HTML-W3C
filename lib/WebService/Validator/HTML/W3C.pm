@@ -16,7 +16,7 @@ __PACKAGE__->mk_accessors(
 
 use vars qw( $VERSION $VALIDATOR_URI $HTTP_TIMEOUT );
 
-$VERSION       = 0.27;
+$VERSION       = 0.28;
 $VALIDATOR_URI = 'http://validator.w3.org/check';
 $HTTP_TIMEOUT  = 30;
 
@@ -143,7 +143,7 @@ Validate a scalar containing HTML.
 
 =head2 Alternate interface
 
-You can also pass a hash in to specify what you wish to validate. This is provided to ensure compatability with the CSS validator module.
+You can also pass a hash in to specify what you wish to validate. This is provided to ensure compatibility with the CSS validator module.
 
 	$v->validate( uri => 'http://example.com/' );
 	$v->validate( string => $markup );
@@ -185,7 +185,7 @@ sub validate {
 		} elsif( $opts{ 'file' } ) {
 			return $self->validate_file( $opts{ 'file' } );
 		} else {
-			return self->validator_error( "You need to provide a uri, string or file to validate" );
+			return $self->validator_error( "You need to provide a uri, string or file to validate" );
 		}
 	} else {
 	    $uri = shift;		
@@ -631,8 +631,8 @@ TEST_AUTHOR.
 That said I'm very happy to hear about bugs. All the more so if they come
 with patches ;).
 
-Please use http://rt.cpan.org/ for filing bug reports, and indeed feature
-requests.
+Please use L<http://rt.cpan.org/> for filing bug reports, and indeed feature
+requests. The code can also be found on L<github|https://github.com/struan/webservice-validator-html-w3c>.
 
 =head1 THANKS
 
@@ -647,7 +647,7 @@ Matt Ryder provided a patch for support of the explanations in the SOAP output.
 
 =head1 SUPPORT
 
-author email or via http://rt.cpan.org/.
+author email or via L<http://rt.cpan.org/>.
 
 =head1 AUTHOR
 

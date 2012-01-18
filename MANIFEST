@@ -27,3 +27,4 @@ t/99_pod.t
 t/99_podcover.t
 t/invalid.html
 t/valid.html
+META.json
